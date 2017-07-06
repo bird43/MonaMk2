@@ -30,7 +30,9 @@
 #define Batt A6
 
 #define WheelCircum 0.092
-#define TicksPerRev 295
+#define TicksPerRev 980 // from testing, might be plus or minus a few ticks
+#define DistPerTick 0.00009387755
+
 
 void RightEncoderISR(void);
 void LeftEncoderISR(void);

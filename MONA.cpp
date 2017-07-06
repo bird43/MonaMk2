@@ -95,7 +95,7 @@ long MONA::RightTimePeriod(void){
   return pulseIn(ENCRight, HIGH);
 }
 
-float MONA::LeftVelocity(void){
+float MONA::LeftVelocity(void){ // doesn't work yet
   float TimePeriod;
   float Velocity;
 
@@ -104,14 +104,13 @@ float MONA::LeftVelocity(void){
   return Velocity;
 }
 
-float MONA::RightVelocity(void){
-  float TimePeriod;
-  float Velocity;
-  static char outstr[15];
+float MONA::RightVelocity(void){ // doesn't work yet, will probably move to ISR and count 100 pulse durations before updating global variable
+  double TimePeriod;
+  double Velocity;
 
-  TimePeriod = RightTimePeriod() / 1000000;
-  Velocity = (WheelCircum / TicksPerRev) / TimePeriod;
-  dtostrf(Velocity,7, 3, outstr);
-  Serial.println(outstr);
+  TimePeriod = RightTimePeriod();
+  Velocity = (DistPerTick / TimePeriod);
+  Serial.println(Velocity,8);
+
   return Velocity;
 }
