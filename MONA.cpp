@@ -3,14 +3,41 @@
 //variables to store the encoder ticks
 volatile long RightEncoderTicks = 0;
 volatile long LeftEncoderTicks = 0;
-
+double LVel = 0;
+double RVel = 0;
+char LCounter = 0;
+char RCounter = 0;
+long TimeNowLeft = 0;
+long TimeNowRight = 0;
+long TimeStartLeft = 0;
+long TimeStartRight = 0;
 
 void LeftEncoderISR(void){
   LeftEncoderTicks++;
+  LCounter++;
+  if(LCounter == 1){
+    TimeStartLeft = micros();
+  }
+  if(LCounter == 11){
+    LCounter = 0;
+    TimeNowLeft = micros() - TimeStartLeft;
+
+    LVel = 0.0009387755 / (float (TimeNowLeft) / 1000000);
+  }
 }
 
 void RightEncoderISR(void){
   RightEncoderTicks++;
+  RCounter++;
+  if(RCounter == 1){
+    TimeStartRight = micros();
+  }
+  if(RCounter == 11){
+    RCounter = 0;
+    TimeNowRight = micros() - TimeStartRight;
+
+    RVel = 0.0009387755 / (float (TimeNowRight) / 1000000);
+  }
 }
 
 MONA::MONA(){
@@ -95,22 +122,10 @@ long MONA::RightTimePeriod(void){
   return pulseIn(ENCRight, HIGH);
 }
 
-float MONA::LeftVelocity(void){ // doesn't work yet
-  float TimePeriod;
-  float Velocity;
-
-  TimePeriod = LeftTimePeriod();
-  Velocity = (WheelCircum / TicksPerRev) / TimePeriod;
-  return Velocity;
+float MONA::LeftVelocity(void){
+  return LVel;
 }
 
 float MONA::RightVelocity(void){ // doesn't work yet, will probably move to ISR and count 100 pulse durations before updating global variable
-  double TimePeriod;
-  double Velocity;
-
-  TimePeriod = RightTimePeriod();
-  Velocity = (DistPerTick / TimePeriod);
-  Serial.println(Velocity,8);
-
-  return Velocity;
+  return RVel;
 }
