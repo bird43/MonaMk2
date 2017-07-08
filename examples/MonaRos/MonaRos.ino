@@ -8,7 +8,7 @@
 #include <geometry_msgs/Twist.h>
 #include <math.h>
 #include <MONA.h>
-#define RovWid 0.24 //////////////////////////////////////// change me
+#define RovWid 0.11 //////////////////////////////////////// change me ok
 
 MONA mona;
 ros::NodeHandle  nh;
@@ -18,12 +18,16 @@ geometry_msgs::Twist msg;
 ros::Publisher pub_tick_left("ticks_left", &tick_msg_left);
 ros::Publisher pub_tick_right("ticks_right", &tick_msg_right);
 
-float XVel, Heading;
+
+float DesVelRight, DesVelLeft;
 
 void roverCallBack(const geometry_msgs::Twist& cmd_vel)
 {
+  float XVel, Heading;
   XVel = cmd_vel.linear.x;
   Heading = cmd_vel.angular.z;
+  DesVelRight = (2 * XVel + (Heading * RovWid)) / 2;
+  DesVelLeft = (2 * XVel - (Heading * RovWid)) / 2; // turn this into 
 }
 
 ros::Subscriber <geometry_msgs::Twist> sub("/turtle1/cmd_vel",roverCallBack);
@@ -47,10 +51,10 @@ void loop() {
   int data[5];
   int battery;
   float LeftVelocity, RightVelocity;
-  char PWML = 0;
-  char DIRL = 0;
-  char PWMR = 0;
-  char DIRR = 0;
+  unsigned char PWML = 0;
+  unsigned char DIRL = 0;
+  unsigned char PWMR = 0;
+  unsigned char DIRR = 0;
 
   while(1){
     OdomLeft = mona.GetLeftOdom();
@@ -59,7 +63,21 @@ void loop() {
     tick_msg_right.data = OdomRight;
     pub_tick_left.publish(&tick_msg_left);
     pub_tick_right.publish(&tick_msg_right);
-    
+
+    PWMR = (DesVelRight / 6); 
+    PWML = (DesVelLeft / 6); 
+    if(DesVelRight > 0){
+      DIRR = 0;
+    }
+    else{
+      DIRR = 1;
+    }
+    if(DesVelLeft > 0){
+      DIRL = 0;
+    }
+    else{
+      DIRL = 1;
+    }
     mona.DriveRight(PWMR, DIRR);
     mona.DriveLeft(PWML, DIRL);
     
