@@ -5,6 +5,6 @@ A c++ library (Arduino) writen by Ben Bird for a differential drive robot design
 
 Library can eaily be used to provide low level control of any differential drive robot by simply changing the pin definitions. Your hardware will require encoders connected to interrup pins.
 
-Will provide a ROS node in the coming weeks. 
+An untested ROS main file is included in the examples, will test in a few weeks. 
 
 
