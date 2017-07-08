@@ -55,6 +55,8 @@ public:
 	long RightTimePeriod(void);
 	float LeftVelocity(void);
 	float RightVelocity(void);
+	long GetRightOdom(void);
+	long GetLeftOdom(void);
 };
 
 #endif //  MONA_H

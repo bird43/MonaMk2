@@ -7,10 +7,14 @@ double LVel = 0;
 double RVel = 0;
 char LCounter = 0;
 char RCounter = 0;
+char LeftDriveFlag = 0;
+char RightDriveFlag = 0;
 long TimeNowLeft = 0;
 long TimeNowRight = 0;
 long TimeStartLeft = 0;
 long TimeStartRight = 0;
+long OdomLeftTicks = 0;
+long OdomRightTicks = 0;
 
 void LeftEncoderISR(void){
   LeftEncoderTicks++;
@@ -23,6 +27,15 @@ void LeftEncoderISR(void){
     TimeNowLeft = micros() - TimeStartLeft;
 
     LVel = 0.0009387755 / (float (TimeNowLeft) / 1000000);
+  }
+  if(LeftDriveFlag == 0){
+      LVel = 0.0;
+  }
+  if(LeftDriveFlag == 1){
+    OdomLeftTicks++;
+  }
+  if(LeftDriveFlag == 2){
+    OdomLeftTicks--;
   }
 }
 
@@ -37,6 +50,15 @@ void RightEncoderISR(void){
     TimeNowRight = micros() - TimeStartRight;
 
     RVel = 0.0009387755 / (float (TimeNowRight) / 1000000);
+  }
+  if(RightDriveFlag == 0){
+      LVel = 0.0;
+  }
+  if(RightDriveFlag == 1){
+    OdomRightTicks++;
+  }
+  if(RightDriveFlag == 2){
+    OdomRightTicks--;
   }
 }
 
@@ -58,22 +80,37 @@ void MONA::DriveRight(unsigned char PWM, unsigned char DIR){
   if(DIR == 1){
     digitalWrite(DIRRight, HIGH);
     analogWrite(!PWMRight, PWM);
+    RightDriveFlag = 2;
   }
   else{
     digitalWrite(DIRRight, LOW);
     analogWrite(PWMRight, PWM);
+    RightDriveFlag = 1;
   }
-  
+  if(PWM > 0){
+    RightDriveFlag = 1;
+  }
+  else{
+    RightDriveFlag = 0;
+  }
 }
 
 void MONA::DriveLeft(unsigned char PWM, unsigned char DIR){
   if(DIR == 1){
     digitalWrite(DIRLeft, HIGH);
     analogWrite(!PWMLeft, PWM);
+    LeftDriveFlag = 2;
   }
   else{
     digitalWrite(DIRLeft, LOW);
     analogWrite(PWMLeft, PWM);
+    LeftDriveFlag = 1;
+  }
+  if(PWM > 0){
+    LeftDriveFlag = 1;
+  }
+  else{
+    LeftDriveFlag = 0;
   }
   
 }
@@ -128,4 +165,12 @@ float MONA::LeftVelocity(void){
 
 float MONA::RightVelocity(void){ // doesn't work yet, will probably move to ISR and count 100 pulse durations before updating global variable
   return RVel;
+}
+
+long MONA::GetRightOdom(void){
+  return OdomRightTicks;
+}
+
+long MONA::GetLeftOdom(void){
+  return OdomLeftTicks;
 }
