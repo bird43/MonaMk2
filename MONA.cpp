@@ -87,12 +87,6 @@ void MONA::DriveRight(unsigned char PWM, unsigned char DIR){
     analogWrite(PWMRight, PWM);
     RightDriveFlag = 1;
   }
-  if(PWM > 0){
-    RightDriveFlag = 1;
-  }
-  else{
-    RightDriveFlag = 0;
-  }
 }
 
 void MONA::DriveLeft(unsigned char PWM, unsigned char DIR){
@@ -105,12 +99,6 @@ void MONA::DriveLeft(unsigned char PWM, unsigned char DIR){
     digitalWrite(DIRLeft, LOW);
     analogWrite(PWMLeft, PWM);
     LeftDriveFlag = 1;
-  }
-  if(PWM > 0){
-    LeftDriveFlag = 1;
-  }
-  else{
-    LeftDriveFlag = 0;
   }
   
 }
