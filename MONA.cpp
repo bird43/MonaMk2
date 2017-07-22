@@ -79,7 +79,7 @@ void MONA::InitMotors(void){
 void MONA::DriveRight(unsigned char PWM, unsigned char DIR){
   if(DIR == 1){
     digitalWrite(DIRRight, HIGH);
-    analogWrite(!PWMRight, PWM);
+    analogWrite(PWMRight, ~PWM); // !
     RightDriveFlag = 2;
   }
   else{
@@ -92,7 +92,7 @@ void MONA::DriveRight(unsigned char PWM, unsigned char DIR){
 void MONA::DriveLeft(unsigned char PWM, unsigned char DIR){
   if(DIR == 1){
     digitalWrite(DIRLeft, HIGH);
-    analogWrite(!PWMLeft, PWM);
+    analogWrite(PWMLeft, ~PWM); // using unconventional h bridge set up
     LeftDriveFlag = 2;
   }
   else{
@@ -133,6 +133,11 @@ long MONA::GetRightEncoder(void){
 
 long MONA::GetLeftEncoder(void){
   return LeftEncoderTicks;
+}
+
+void MONA::ResetEncoders(void){
+  RightEncoderTicks = 0;
+  LeftEncoderTicks = 0;
 }
 
 int MONA::GetBattery(void){

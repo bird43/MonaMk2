@@ -50,6 +50,7 @@ public:
 	void InitEncoders(void);
 	long GetRightEncoder(void);
 	long GetLeftEncoder(void);
+	void ResetEncoders(void);
 	int GetBattery(void);
 	long LeftTimePeriod(void);
 	long RightTimePeriod(void);
