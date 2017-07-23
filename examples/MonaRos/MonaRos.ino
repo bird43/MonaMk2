@@ -8,7 +8,7 @@
 #include <geometry_msgs/Twist.h>
 #include <math.h>
 #include <MONA.h>
-#define RovWid 0.11 //////////////////////////////////////// change me ok
+#define RovWid 0.086 
 
 MONA mona;
 ros::NodeHandle  nh;
@@ -30,7 +30,7 @@ void roverCallBack(const geometry_msgs::Twist& cmd_vel)
   DesVelLeft = (2 * XVel - (Heading * RovWid)) / 2; // turn this into 
 }
 
-ros::Subscriber <geometry_msgs::Twist> sub("/turtle1/cmd_vel",roverCallBack);
+ros::Subscriber <geometry_msgs::Twist> sub("/cmd_vel",roverCallBack); // changeback to /turtle1/cmd_vel to use standard turtlesim teleop keyu thingy
 
 void setup() {
   nh.initNode();
@@ -42,15 +42,15 @@ void setup() {
 }
 
 void loop() {
-  long RightEncoder = 0;
-  long LeftEncoder = 0;
-  long LeftTime = 0;
-  long RightTime = 0;
+  //long RightEncoder = 0;
+  //long LeftEncoder = 0;
+  //long LeftTime = 0;
+  //long RightTime = 0;
   long OdomLeft = 0;
   long OdomRight = 0;
-  int data[5];
-  int battery;
-  float LeftVelocity, RightVelocity;
+  //int data[5];
+  //int battery;
+  //float LeftVelocity, RightVelocity;
   unsigned char PWML = 0;
   unsigned char DIRL = 0;
   unsigned char PWMR = 0;
@@ -64,23 +64,33 @@ void loop() {
     pub_tick_left.publish(&tick_msg_left);
     pub_tick_right.publish(&tick_msg_right);
 
-    PWMR = (DesVelRight / 6); 
-    PWML = (DesVelLeft / 6); 
-    if(DesVelRight > 0){
+    if(DesVelRight >= 0){
       DIRR = 0;
+      PWMR = 2466*(DesVelRight*DesVelRight) + 229.1 * DesVelRight + 28.51;
     }
     else{
       DIRR = 1;
+      PWMR = -819 * (DesVelRight*DesVelRight) - 1106 * DesVelRight + 23.71;
     }
-    if(DesVelLeft > 0){
+    if(DesVelLeft >=  0){
       DIRL = 0;
+      PWML = 2705 * (DesVelLeft*DesVelLeft) + 257.9 * DesVelLeft + 26.64;
     }
     else{
       DIRL = 1;
+      PWML = -803.9 * (DesVelLeft*DesVelLeft) - 1124 * DesVelLeft + 23.61;
     }
+    
+    if(DesVelRight == 0.0){
+      PWMR = 0;
+    }
+    if(DesVelLeft == 0.0){
+      PWML = 0;
+    }
+    
     mona.DriveRight(PWMR, DIRR);
     mona.DriveLeft(PWML, DIRL);
-    
+
     delay(10);
     nh.spinOnce();
   }
